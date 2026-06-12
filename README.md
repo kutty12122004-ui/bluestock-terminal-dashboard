@@ -51,8 +51,9 @@ python manage.py import_companies dim_company.csv
 python manage.py runserver
 ```
 
-Visit: `http://127.0.0.1:8000/`
-
+##  Live Demo
+The application is deployed and accessible 24/7 at: 
+[Bluestock Financial Intelligence Platform](https://bluestock-terminal-dashboard.onrender.com/)
 ---
 
 ## Project Structure

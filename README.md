@@ -51,7 +51,7 @@ python manage.py import_companies dim_company.csv
 python manage.py runserver
 ```
 
-##  Live Demo
+Live Demo
 The application is deployed and accessible 24/7 at: 
 [Bluestock Financial Intelligence Platform](https://bluestock-terminal-dashboard.onrender.com/)
 ---

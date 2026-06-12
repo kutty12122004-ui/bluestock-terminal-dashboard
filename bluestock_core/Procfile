@@ -1,0 +1,1 @@
+web: gunicorn bluestock_core.wsgi:application

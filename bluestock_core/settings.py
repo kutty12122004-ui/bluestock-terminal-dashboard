@@ -90,12 +90,8 @@ WSGI_APPLICATION = 'bluestock_core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bluestock_dw',
-        'USER': 'postgres',
-        'PASSWORD': 'password',  # <-- MUST match the password used in your ETL script exactly!
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

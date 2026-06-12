@@ -1,0 +1,80 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Market Quantitative Screener — Bluestock Terminal{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-lg">
+        <h2 class="text-2xl font-bold text-white tracking-tight">Quantitative Strategy Screener</h2>
+        <p class="text-gray-400 text-sm mt-1">Filter corporate equities using custom structural cross-sectional ratio parameters.</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl">
+        <form method="GET" action="{% url 'market_screener' %}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Target Sector</label>
+                <select name="sector" class="w-full bg-gray-900 text-gray-200 text-sm rounded-xl border border-gray-700 p-2.5 focus:border-blue-500 focus:outline-none">
+                    <option value="">-- All Listed Sectors --</option>
+                    {% for sector in all_sectors %}
+                        <option value="{{ sector }}" {% if selected_sector == sector %}selected{% endif %}>{{ sector }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Max Debt-to-Equity (D/E)</label>
+                <input type="number" step="0.01" name="max_de" value="{{ request.GET.max_de }}" placeholder="e.g. 1.0"
+                       class="w-full bg-gray-900 text-gray-200 text-sm rounded-xl border border-gray-700 p-2.5 focus:border-blue-500 focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Min Net Profit Margin %</label>
+                <input type="number" step="0.1" name="min_npm" value="{{ request.GET.min_npm }}" placeholder="e.g. 12.5"
+                       class="w-full bg-gray-900 text-gray-200 text-sm rounded-xl border border-gray-700 p-2.5 focus:border-blue-500 focus:outline-none">
+            </div>
+
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow transition">
+                    Run Analysis
+                </button>
+                <a href="{% url 'market_screener' %}" class="bg-gray-700 hover:bg-gray-600 text-center text-gray-200 font-semibold text-sm py-2.5 px-4 rounded-xl transition">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-900/50 border-b border-gray-700 text-gray-400 text-xs font-bold tracking-wider uppercase">
+                        <th class="px-6 py-4">Ticker</th>
+                        <th class="px-6 py-4">Company Entity Name</th>
+                        <th class="px-6 py-4">Sector</th>
+                        <th class="px-6 py-4 text-right">Action Interface</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700/50 text-sm text-gray-300">
+                    {% for company in companies %}
+                    <tr class="hover:bg-gray-700/30 transition">
+                        <td class="px-6 py-4 font-mono font-bold text-blue-400 uppercase tracking-wide">{{ company.symbol }}</td>
+                        <td class="px-6 py-4 font-medium text-gray-100">{{ company.company_name }}</td>
+                        <td class="px-6 py-4 text-gray-400">{{ company.sector }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="{% url 'company_detail' company.symbol %}" class="text-xs bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition">Explore Profile</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">
+                            No listed corporate enterprise configurations match the current filter metrics.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

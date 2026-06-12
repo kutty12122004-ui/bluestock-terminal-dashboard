@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bluestock Terminal{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex flex-col">
+
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-6">
+            <h1 class="text-xl font-bold tracking-wider text-blue-400">🚀 BLUESTOCK TERMINAL</h1>
+            <div class="hidden md:flex space-x-6 text-sm font-medium text-gray-300">
+                <a href="/" class="hover:text-blue-400 transition">Home</a>
+                <a href="/companies/" class="hover:text-blue-400 transition">Market Matrix</a>
+                <a href="/screener/" class="hover:text-blue-400 transition">Screener</a>
+                <a href="/compare/" class="hover:text-blue-400 transition">Compare Engine</a>
+            </div>
+        </div>
+        <span class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-semibold border border-blue-500/30">
+            ● Analytics Layer Active
+        </span>
+    </nav>
+
+    <main class="flex-grow p-6 max-w-7xl mx-auto w-full">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 border-t border-gray-700 py-4 text-center text-xs text-gray-500 mt-12">
+        Bluestock Fintech — Nifty 100 Financial Intelligence Platform | Intern Project Documentation | June 2026
+    </footer>
+
+</body>
+</html>

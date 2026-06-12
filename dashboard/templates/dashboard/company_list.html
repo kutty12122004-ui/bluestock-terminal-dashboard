@@ -1,0 +1,102 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Market Matrix — Bluestock Terminal{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-lg">
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight text-white">Market Capital Asset Matrix</h2>
+            <p class="text-gray-400 text-sm">Real-time filterable index of tracked corporate equities.</p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" id="tableSearch" placeholder="Filter by symbol/name/sector..." 
+                   class="bg-gray-900 text-gray-100 px-4 py-2.5 rounded-xl border border-gray-700 focus:outline-none focus:border-blue-500 text-sm w-full sm:w-64">
+            
+            <button onclick="clearFilters()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 text-sm font-semibold px-4 py-2.5 rounded-xl transition">
+                Reset
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="assetTable">
+                <thead>
+                    <tr class="bg-gray-900/50 border-b border-gray-700 text-gray-400 text-xs font-bold tracking-wider uppercase">
+                        <th class="px-6 py-4">Ticker</th>
+                        <th class="px-6 py-4">Corporate Entity Name</th>
+                        <th class="px-6 py-4">Industry Sector</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700/50 text-sm text-gray-300" id="tableBody">
+                    {% for company in companies %}
+                    <tr class="hover:bg-gray-700/30 transition asset-row">
+                        <td class="px-6 py-4 font-mono font-bold text-blue-400 uppercase tracking-wide asset-symbol">{{ company.symbol }}</td>
+                        <td class="px-6 py-4 font-medium text-gray-100 asset-name">{{ company.company_name }}</td>
+                        <td class="px-6 py-4 text-gray-400 asset-sector">{{ company.sector }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="{% url 'company_detail' company.symbol %}" class="text-xs bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition">Explore Profile</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr id="noRecordsRow">
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">
+                            No corporate tracking assets registered or matching search filters.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('tableSearch');
+    
+    searchInput.addEventListener('input', () => {
+        const filterText = searchInput.value.toLowerCase().strip();
+        const tableRows = document.querySelectorAll('.asset-row');
+        let visibleCount = 0;
+
+        tableRows.forEach(row => {
+            const symbol = row.querySelector('.asset-symbol').textContent.toLowerCase();
+            const name = row.querySelector('.asset-name').textContent.toLowerCase();
+            const sector = row.querySelector('.asset-sector').textContent.toLowerCase();
+            
+            // Evaluates matches across ticker symbols, official names, or industries
+            if (symbol.includes(filterText) || name.includes(filterText) || sector.includes(filterText)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Handles rendering a structural clean notice if client-side filtration leaves zero visible parameters
+        let emptyNotice = document.getElementById('jsEmptyNotice');
+        if (visibleCount === 0) {
+            if (!emptyNotice) {
+                emptyNotice = document.createElement('tr');
+                emptyNotice.id = 'jsEmptyNotice';
+                emptyNotice.innerHTML = `<td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">No matching companies found for "${searchInput.value}"</td>`;
+                document.getElementById('tableBody').appendChild(emptyNotice);
+            }
+        } else if (emptyNotice) {
+            emptyNotice.remove();
+        }
+    });
+
+    function clearFilters() {
+        searchInput.value = '';
+        const tableRows = document.querySelectorAll('.asset-row');
+        tableRows.forEach(row => row.style.display = '');
+        
+        const emptyNotice = document.getElementById('jsEmptyNotice');
+        if (emptyNotice) emptyNotice.remove();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Upload | Bluestock Terminal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            margin: 0;
+            padding: 50px 20px;
+        }
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+            background-color: #111827;
+            border: 1px solid #1f2937;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        h2 {
+            color: #3b82f6;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        p {
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .form-group {
+            margin: 25px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d1d5db;
+            font-size: 14px;
+        }
+        input[type="file"] {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            color: #9ca3af;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .back-link:hover {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Data Ingestion Matrix Setup</h2>
+    <p>Upload your <strong>dim_company.csv</strong> data mapping asset file below to initialize or update the Nifty 100 enterprise tracking database tables.</p>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.csv_file.label_tag }}
+            {{ form.csv_file }}
+        </div>
+        <button type="submit">Execute Import Mapping</button>
+    </form>
+    
+    <a href="/companies/" class="back-link">← Cancel and return to Terminal Matrix</a>
+</div>
+
+</body>
+</html>

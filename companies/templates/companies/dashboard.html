@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluestock Data Warehouse Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
+
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center shadow-md">
+        <h1 class="text-xl font-bold tracking-wider text-blue-400">🚀 BLUESTOCK FINANCIAL INSIGHTS</h1>
+        <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-semibold border border-green-500/30">
+            ● Live API Connected
+        </span>
+    </nav>
+
+    <main class="p-6 max-w-7xl mx-auto space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="company-cards">
+            <div class="p-6 bg-gray-800 rounded-xl border border-gray-700 animate-pulse text-center text-gray-400">Loading data profiles...</div>
+            <div class="p-6 bg-gray-800 rounded-xl border border-gray-700 animate-pulse text-center text-gray-400">Loading data profiles...</div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="p-6 bg-gray-800 rounded-xl border border-gray-700 shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-300 mb-4">Revenue vs. Net Profit Performance (FY25)</h3>
+                <div class="relative h-64">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <div class="p-6 bg-gray-800 rounded-xl border border-gray-700 shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-300 mb-4">Capital Structure & Leverage (Debt-to-Equity)</h3>
+                <div class="relative h-64">
+                    <canvas id="leverageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        async function loadDashboardAnalytics() {
+            try {
+                // Fetch transactional matrices from your active Django API route
+                const response = await fetch('/api/profiles/');
+                const data = await response.json();
+                
+                const cardsContainer = document.getElementById('company-cards');
+                cardsContainer.innerHTML = ''; // Clear skeleton loader text
+
+                // Setup raw container metrics for plotting graphs
+                const labels = [];
+                const revenues = [];
+                const netProfits = [];
+                const debtRatios = [];
+
+                data.forEach(company => {
+                    const latestIncome = company.income_statements[0] || {};
+                    const latestBalance = company.balance_sheets[0] || {};
+
+                    labels.push(company.company_name);
+                    revenues.push(parseFloat(latestIncome.revenue || 0));
+                    netProfits.push(parseFloat(latestIncome.net_profit || 0));
+                    debtRatios.push(parseFloat(latestBalance.debt_to_equity_ratio || 0));
+
+                    // Append dynamic corporate KPI summaries dynamically to cards
+                    cardsContainer.innerHTML += `
+                        <div class="p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-blue-500/50 transition shadow-lg">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-white">${company.symbol}</h2>
+                                    <p class="text-gray-400 text-sm font-medium">${company.company_name} — <span class="text-blue-400">${company.sector}</span></p>
+                                </div>
+                                <a href="${company.website}" target="_blank" class="text-xs text-blue-400 hover:underline">Official Site ↗</a>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-4 line-clamp-2">${company.about_company}</p>
+                            
+                            <div class="grid grid-cols-2 gap-4 border-t border-gray-700 pt-4">
+                                <div>
+                                    <span class="text-xs text-gray-400 block mb-1">Net Profit Margin</span>
+                                    <span class="text-lg font-bold text-green-400">${latestIncome.net_profit_margin || '0'}%</span>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-gray-400 block mb-1">Debt to Equity Ratio</span>
+                                    <span class="text-lg font-bold text-amber-400">${latestBalance.debt_to_equity_ratio || '0'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // --- Plot Chart 1: Revenue & Profits Comparison Bar Chart ---
+                new Chart(document.getElementById('revenueChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Revenue (₹)', data: revenues, backgroundColor: '#3b82f6', borderRadius: 6 },
+                            { label: 'Net Profit (₹)', data: netProfits, backgroundColor: '#10b981', borderRadius: 6 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }, x: { ticks: { color: '#9ca3af' } } },
+                        plugins: { legend: { labels: { color: '#f3f4f6' } } }
+                    }
+                });
+
+                // --- Plot Chart 2: Debt-to-Equity Comparative Bar Chart (Updated Axis) ---
+                new Chart(document.getElementById('leverageChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Debt-to-Equity Ratio', data: debtRatios, backgroundColor: '#f59e0b', borderRadius: 6 }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { 
+                            y: { 
+                                beginAtZero: true, // Now adjusts fluidly beyond 1.0 based on incoming enterprise debt loads
+                                grid: { color: '#374151' }, 
+                                ticks: { color: '#9ca3af' } 
+                            }, 
+                            x: { ticks: { color: '#9ca3af' } } 
+                        },
+                        plugins: { legend: { labels: { color: '#f3f4f6' } } }
+                    }
+                });
+
+            } catch (error) {
+                console.error("Dashboard engine rendering failure:", error);
+            }
+        }
+        
+        // Execute fetch call on viewport generation
+        window.onload = loadDashboardAnalytics;
+    </script>
+</body>
+</html>

@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '.ngrok-free.app',
     '.ngrok-free.dev',
+    '.onrender.com',
 ]
 
 
